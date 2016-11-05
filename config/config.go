@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/BurntSushi/toml"
 	"io/ioutil"
 	"strings"
-	"fmt"
+
+	"github.com/BurntSushi/toml"
 )
 
 type Domain struct {
@@ -36,12 +36,6 @@ type Web struct {
 	ErrorLog  string `json:"error_log" toml:"error_log"`
 }
 
-type DNS struct {
-	IP   string `json:"ip" toml:"ip"`
-	Port int    `json:"port" toml:"port"`
-	Servers []Server `json:"servers"`
-}
-
 type WebDav struct {
 	Enabled  bool   `json:"enabled" toml:"enabled"`
 	Username string `json:"username" toml:"username"`
@@ -62,7 +56,6 @@ type Config struct {
 
 	Zone   Zone   `json:"zone" toml:"zone"`
 	Web    Web    `json:"web" toml:"web"`
-	DNS    DNS    `json:"dns" toml:"dns"`
 	WebDav WebDav `json:"webdav" toml:"webdav"`
 }
 
@@ -81,10 +74,6 @@ func NewConfigFromFile(filename string) (config *Config, err error) {
 
 	if _, err := toml.Decode(string(file), &config); err != nil {
 		return nil, err
-	}
-
-	if len(config.DNS.Servers) == 0 {
-		return nil, fmt.Errorf("No DNS servers specified")
 	}
 
 	config.normalizeData()

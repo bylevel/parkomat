@@ -2,14 +2,13 @@ package main
 
 import (
 	"flag"
-	log "github.com/Sirupsen/logrus"
-	"github.com/bylevel/parkomat/config"
-	"github.com/bylevel/parkomat/dns"
-	"github.com/bylevel/parkomat/web"
-	"github.com/bylevel/parkomat/webdav"
 	"os"
 	"sync"
-	"strconv"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/bylevel/parkomat/config"
+	"github.com/bylevel/parkomat/web"
+	"github.com/bylevel/parkomat/webdav"
 )
 
 func main() {
@@ -18,7 +17,6 @@ func main() {
 	}).Info("Parkomat (parkomat.io)")
 
 	configFile := flag.String("config_file", "parkomat.toml", "Configuration File")
-	dnsOnly := flag.Bool("dns_only", false, "Run only DNS server")
 	flag.Parse()
 
 	var c *config.Config
@@ -28,13 +26,6 @@ func main() {
 	envConfigFile := os.Getenv("PARKOMAT_CONFIG_FILE")
 	if envConfigFile != "" {
 		configFile = &envConfigFile
-	}
-
-	envDnsOnly := os.Getenv("PARKOMAT_DNS_ONLY")
-	if envDnsOnly != "" {
-		if s, err := strconv.ParseBool(envDnsOnly); err == nil {
-			dnsOnly = &s
-		}
 	}
 
 	c, err = config.NewConfigFromFile(*configFile)
@@ -49,67 +40,27 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	// TODO: implement graceful shutdown
-	wg.Add(1)
-	go func() {
-		d := dns.NewDNS(c)
-		err = d.Serve("udp")
-		if err != nil {
-			log.WithFields(log.Fields{
-				"service": "main",
-				"error":   err,
-			}).Error("DNS UDP Error")
-		}
-		wg.Done()
-	}()
+	s := web.NewServer(c)
+	dav := webdav.NewWebDav(c)
 
-	wg.Add(1)
-	go func() {
-		d := dns.NewDNS(c)
-		err = d.Serve("tcp")
-		if err != nil {
-			log.WithFields(log.Fields{
-				"service": "main",
-				"error":   err,
-			}).Error("DNS TCP Error")
-		}
-		wg.Done()
-	}()
+	s.Init()
 
-	if *dnsOnly != true {
-		s := web.NewServer(c)
-		dav := webdav.NewWebDav(c)
-
-		s.Init()
-
-		err = dav.Init()
-		if err == nil {
-			s.AddHandlerFunc(c.WebDav.Mount, dav.HandlerFunc)
-		}
-
-		wg.Add(2)
-		go func() {
-			err = s.Serve()
-			if err != nil {
-				log.WithFields(log.Fields{
-					"service": "main",
-					"error":   err,
-				}).Error("Web Error")
-			}
-			wg.Done()
-		}()
-
-		go func() {
-			err = s.ListenAndServeTLSSNI()
-			if err != nil {
-				log.WithFields(log.Fields{
-					"service": "main",
-					"error":   err,
-				}).Error("Web SSL Error")
-			}
-			wg.Done()
-		}()
+	err = dav.Init()
+	if err == nil {
+		s.AddHandlerFunc(c.WebDav.Mount, dav.HandlerFunc)
 	}
+
+	wg.Add(1)
+	go func() {
+		err = s.Serve()
+		if err != nil {
+			log.WithFields(log.Fields{
+				"service": "main",
+				"error":   err,
+			}).Error("Web Error")
+		}
+		wg.Done()
+	}()
 
 	wg.Wait()
 	log.WithFields(log.Fields{
