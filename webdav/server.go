@@ -3,7 +3,7 @@ package webdav
 import (
 	"fmt"
 	log "github.com/Sirupsen/logrus"
-	"github.com/parkomat/parkomat/config"
+	"github.com/bylevel/parkomat/config"
 	"golang.org/x/net/webdav"
 	"net/http"
 	"path/filepath"

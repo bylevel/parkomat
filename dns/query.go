@@ -2,8 +2,8 @@ package dns
 
 import (
 	log "github.com/Sirupsen/logrus"
+	"github.com/bylevel/parkomat/config"
 	mdns "github.com/miekg/dns"
-	"github.com/parkomat/parkomat/config"
 )
 
 // ParseQuery parses incoming query and creates appropriate response message

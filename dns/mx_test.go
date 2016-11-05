@@ -4,7 +4,7 @@ import (
   "testing"
   mdns "github.com/miekg/dns"
   "github.com/stretchr/testify/assert"
-  "github.com/parkomat/parkomat/config"
+  "github.com/bylevel/parkomat/config"
 )
 
 func TestMXHandle(t *testing.T) {

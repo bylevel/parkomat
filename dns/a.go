@@ -2,7 +2,7 @@ package dns
 
 import (
 	mdns "github.com/miekg/dns"
-	"github.com/parkomat/parkomat/config"
+	"github.com/bylevel/parkomat/config"
 	"strings"
 )
 

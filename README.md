@@ -1,4 +1,4 @@
-Parkomat.io [![Build Status](https://travis-ci.org/parkomat/parkomat.svg?branch=master)](https://travis-ci.org/parkomat/parkomat)
+Parkomat.io [![Build Status](https://travis-ci.org/bylevel/parkomat.svg?branch=master)](https://travis-ci.org/bylevel/parkomat)
 -----------------------------------------------------------------------------------------------------------------------------------
 
 ### What is it?
@@ -22,7 +22,7 @@ Parkomat at the moment doesn't provide pre-built binaries, so you need to have G
 To build, issue:
 
 ```
-go get github.com/parkomat/parkomat
+go get github.com/bylevel/parkomat
 ```
 
 ### Setting up
@@ -32,11 +32,11 @@ As a configuration format Parkomat uses [TOML](https://github.com/toml-lang/toml
 ### Try with Docker
 
 ```
-docker pull parkomat/parkomat
+docker pull bylevel/parkomat
 ```
 
 ```
-docker run -d -e PARKOMAT_CONFIG_FILE=/opt/parkomat/config.toml -v /your/parkomat/directory:/opt/parkomat -p 53:53/udp parkomat/parkomat
+docker run -d -e PARKOMAT_CONFIG_FILE=/opt/parkomat/config.toml -v /your/parkomat/directory:/opt/parkomat -p 53:53/udp bylevel/parkomat
 ```
 
 Remember to have `config.toml` file in your `/your/parkomat/directory` path.

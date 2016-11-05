@@ -1,0 +1,12 @@
+package: github.com/bylevel/parkomat
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/Sirupsen/logrus
+- package: github.com/miekg/dns
+- package: golang.org/x/net
+  subpackages:
+  - webdav
+testImport:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
